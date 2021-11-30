@@ -1,25 +1,41 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import Pagination from './components/Pagination';
 import './App.css';
+import Photos from './components/Photos';
 
-function App() {
+const url = "https://jsonplaceholder.typicode.com/albums/1/photos/";
+
+const App = () => {
+  const [photos, setPhotos] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(10);
+
+  const getPhotos = async () => {
+    const nik = await fetch(url);
+    const pqr = await nik.json();
+    setPhotos(pqr);
+  };
+
+  useEffect(() => {
+    getPhotos ();
+  }, []);
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = photos.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Pagination
+        postsPerPage={postsPerPage}
+        totalPosts={photos.length}
+        paginate={paginate}
+      />
+      <Photos photos={currentPosts} />
     </div>
   );
-}
+};
 
 export default App;
